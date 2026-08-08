@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechPulse — AI Technology Briefing Agent</title>
+    <!-- Premium Typography: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <span class="logo-dot"></span>
+                <h1>TechPulse</h1>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Grid -->
+        <main class="dashboard-grid">
+            
+            <!-- Left Column: Status and Dialing Controls -->
+            <div class="dashboard-col left-col">
+                
+                <!-- Status Panel -->
+                <section class="panel status-panel">
+                    <h2 class="panel-title">System Status</h2>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <span class="status-label">Agent Status</span>
+                            <div class="status-value-container">
+                                <span class="status-dot status-ready" id="agent-status-dot"></span>
+                                <span class="status-value" id="agent-status-text">Checking...</span>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Voice Agent</span>
+                            <div class="status-value" id="voice-agent-text">TechPulse (ElevenLabs)</div>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Connection</span>
+                            <span class="status-badge" id="connection-badge">Checking...</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Phone Call Control Panel -->
+                <section class="panel control-panel">
+                    <h2 class="panel-title">Initiate Briefing</h2>
+                    
+                    <div class="input-group">
+                        <label for="target-phone">Target Phone Number</label>
+                        <input type="tel" id="target-phone" placeholder="+1 (555) 000-0000" required>
+                    </div>
+
+                    <button class="btn btn-primary" id="start-call-btn" disabled>
+                        <span class="btn-text">Start Outbound Call</span>
+                        <span class="spinner" id="call-btn-spinner"></span>
+                    </button>
+                    
+                    <button class="btn btn-secondary" id="test-call-btn" disabled>
+                        Run Quick Test Call
+                    </button>
+                    
+                    <div class="alert-box" id="error-message" style="display: none;"></div>
+                    <div class="alert-box success" id="success-message" style="display: none;"></div>
+                </section>
+
+                <!-- Call Status Tracker -->
+                <section class="panel call-status-panel">
+                    <h2 class="panel-title">Active Call Status</h2>
+                    <div class="active-call-display">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="active-call-progress"></div>
+                        </div>
+                        <div class="call-steps">
+                            <div class="step" id="step-connecting">
+                                <div class="step-circle">1</div>
+                                <span class="step-label">Connecting</span>
+                            </div>
+                            <div class="step" id="step-calling">
+                                <div class="step-circle">2</div>
+                                <span class="step-label">Calling</span>
+                            </div>
+                            <div class="step" id="step-connected">
+                                <div class="step-circle">3</div>
+                                <span class="step-label">Connected</span>
+                            </div>
+                            <div class="step" id="step-completed">
+                                <div class="step-circle">4</div>
+                                <span class="step-label">Completed</span>
+                            </div>
+                        </div>
+                        <div class="active-call-details" id="active-call-details" style="display: none;">
+                            <div class="detail-row">
+                                <span>Call SID:</span>
+                                <code id="active-call-sid">-</code>
+                            </div>
+                            <div class="detail-row">
+                                <span>Duration:</span>
+                                <span id="active-call-duration">0s</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Recent Activity and News Feed -->
+            <div class="dashboard-col right-col">
+                
+                <!-- Recent Activity Panel -->
+                <section class="panel activity-panel">
+                    <h2 class="panel-title">Call History</h2>
+                    <div class="table-container">
+                        <table class="activity-table">
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Recipient</th>
+                                    <th>Status</th>
+                                    <th>Duration</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activity-tbody">
+                                <tr>
+                                    <td colspan="5" class="table-loading">Loading activity history...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>TechPulse AI Voice Agent &bull; Powered by FastAPI, Twilio, and ElevenLabs</p>
+        </footer>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
