@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloudinary Screenshot Uploader — TechPulse</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Config Section */
+        .config-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input[type="text"] {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        /* Dropzone */
+        .dropzone {
+            border: 2px dashed rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(99, 102, 241, 0.02);
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .dropzone:hover, .dropzone.dragover {
+            border-color: var(--accent);
+            background: rgba(99, 102, 241, 0.06);
+            transform: scale(1.01);
+        }
+
+        .dropzone-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .dropzone:hover .dropzone-icon {
+            transform: translateY(-5px);
+        }
+
+        .dropzone p {
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .dropzone span {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* Instructions block */
+        .setup-guide {
+            background: rgba(30, 41, 59, 0.4);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 2rem;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+            border-left: 3px solid var(--accent);
+        }
+
+        .setup-guide a {
+            color: #818cf8;
+            text-decoration: none;
+        }
+
+        .setup-guide a:hover {
+            text-decoration: underline;
+        }
+
+        /* Upload Status & History */
+        .status-container {
+            margin-top: 1rem;
+        }
+
+        .upload-item {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .preview-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #000;
+        }
+
+        .upload-info {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .upload-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .upload-status {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .copy-btn {
+            background: var(--accent);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .copy-btn.copied {
+            background: var(--success);
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--accent);
+            border-radius: 3px;
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Cloudinary Uploader</h1>
+        <p>Upload your workshop screenshots and copy the links instantly</p>
+    </header>
+
+    <div class="setup-guide">
+        <strong>Quick Config Setup:</strong><br>
+        1. Sign up/Log in to <a href="https://cloudinary.com/" target="_blank">Cloudinary (Free)</a>.<br>
+        2. Copy your <strong>Cloud Name</strong> from the Dashboard.<br>
+        3. Go to <strong>Settings (Gear icon) > Upload</strong>. Scroll to <strong>Upload presets</strong>, click <strong>Add upload preset</strong>, set the mode to <strong>Unsigned</strong>, and click Save. Use that preset name below.
+    </div>
+
+    <div class="config-section">
+        <div class="input-group">
+            <label for="cloudName">Cloud Name</label>
+            <input type="text" id="cloudName" placeholder="e.g., dxx123abc" value="">
+        </div>
+        <div class="input-group">
+            <label for="uploadPreset">Unsigned Preset</label>
+            <input type="text" id="uploadPreset" placeholder="e.g., preset_name_here" value="">
+        </div>
+    </div>
+
+    <div class="dropzone" id="dropzone">
+        <span class="dropzone-icon">📷</span>
+        <p>Drag & drop your screenshot here</p>
+        <span>or click to browse files</span>
+        <input type="file" id="fileInput" accept="image/*">
+    </div>
+
+    <div class="status-container" id="statusContainer">
+        <!-- Uploading items and history will render here -->
+    </div>
+</div>
+
+<script>
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const cloudNameInput = document.getElementById('cloudName');
+    const uploadPresetInput = document.getElementById('uploadPreset');
+    const statusContainer = document.getElementById('statusContainer');
+
+    // Load saved settings
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedCloudName = localStorage.getItem('tp_cloudinary_cloud_name');
+        const savedPreset = localStorage.getItem('tp_cloudinary_upload_preset');
+        if (savedCloudName) cloudNameInput.value = savedCloudName;
+        if (savedPreset) uploadPresetInput.value = savedPreset;
+    });
+
+    // Save settings on edit
+    const saveSettings = () => {
+        localStorage.setItem('tp_cloudinary_cloud_name', cloudNameInput.value.trim());
+        localStorage.setItem('tp_cloudinary_upload_preset', uploadPresetInput.value.trim());
+    };
+
+    cloudNameInput.addEventListener('input', saveSettings);
+    uploadPresetInput.addEventListener('input', saveSettings);
+
+    // Dropzone Events
+    dropzone.addEventListener('click', () => fileInput.click());
+    
+    dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('dragover');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        if (e.dataTransfer.files.length > 0) {
+            handleFile(e.dataTransfer.files[0]);
+        }
+    });
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            handleFile(fileInput.files[0]);
+        }
+    });
+
+    function handleFile(file) {
+        const cloudName = cloudNameInput.value.trim();
+        const uploadPreset = uploadPresetInput.value.trim();
+
+        if (!cloudName || !uploadPreset) {
+            alert('Please configure your Cloud Name and Unsigned Upload Preset first!');
+            return;
+        }
+
+        const uploadId = 'up-' + Date.now();
+        createUploadItem(uploadId, file);
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', uploadPreset);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, true);
+
+        // Progress Tracking
+        xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+                const percent = (e.loaded / e.total) * 100;
+                updateProgress(uploadId, percent);
+            }
+        };
+
+        xhr.onload = () => {
+            if (xhr.status === 200) {
+                const data = JSON.parse(xhr.responseText);
+                setUploadSuccess(uploadId, data.secure_url);
+            } else {
+                let errorMsg = 'Upload failed';
+                try {
+                    const errObj = JSON.parse(xhr.responseText);
+                    errorMsg = errObj.error.message || errorMsg;
+                } catch(e) {}
+                setUploadError(uploadId, errorMsg);
+            }
+        };
+
+        xhr.onerror = () => {
+            setUploadError(uploadId, 'Network error. Please check your internet connection.');
+        };
+
+        xhr.send(formData);
+    }
+
+    function createUploadItem(id, file) {
+        const item = document.createElement('div');
+        item.className = 'upload-item';
+        item.id = id;
+
+        // Preview local image
+        const reader = new FileReader();
+        const img = document.createElement('img');
+        img.className = 'preview-img';
+        reader.onload = (e) => { img.src = e.target.result; };
+        reader.readAsDataURL(file);
+
+        item.appendChild(img);
+
+        const info = document.createElement('div');
+        info.className = 'upload-info';
+        
+        const name = document.createElement('div');
+        name.className = 'upload-name';
+        name.textContent = file.name;
+        info.appendChild(name);
+
+        const status = document.createElement('div');
+        status.className = 'upload-status';
+        status.textContent = 'Uploading...';
+        info.appendChild(status);
+
+        const progContainer = document.createElement('div');
+        progContainer.className = 'progress-bar-container';
+        const prog = document.createElement('div');
+        prog.className = 'progress-bar';
+        progContainer.appendChild(prog);
+        info.appendChild(progContainer);
+
+        item.appendChild(info);
+        statusContainer.prepend(item);
+    }
+
+    function updateProgress(id, percent) {
+        const item = document.getElementById(id);
+        if (item) {
+            const bar = item.querySelector('.progress-bar');
+            if (bar) bar.style.width = percent + '%';
+        }
+    }
+
+    function setUploadSuccess(id, url) {
+        const item = document.getElementById(id);
+        if (item) {
+            item.querySelector('.progress-bar-container').style.display = 'none';
+            const status = item.querySelector('.upload-status');
+            status.textContent = 'Uploaded successfully!';
+            status.style.color = 'var(--success)';
+
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.textContent = 'Copy Link';
+            copyBtn.onclick = () => {
+                navigator.clipboard.writeText(url).then(() => {
+                    copyBtn.textContent = 'Copied!';
+                    copyBtn.classList.add('copied');
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy Link';
+                        copyBtn.classList.remove('copied');
+                    }, 2000);
+                });
+            };
+            item.appendChild(copyBtn);
+        }
+    }
+
+    function setUploadError(id, message) {
+        const item = document.getElementById(id);
+        if (item) {
+            item.querySelector('.progress-bar-container').style.display = 'none';
+            const status = item.querySelector('.upload-status');
+            status.textContent = 'Error: ' + message;
+            status.style.color = 'var(--danger)';
+        }
+    }
+</script>
+</body>
+</html>
