@@ -154,7 +154,7 @@ To run the FastAPI server:
    ```cmd
    python -m uvicorn backend.main:app --reload
    ```
-4. The backend API is now running locally on `http://127.0.0.1:8001`. You can inspect the interactive swagger documentation at `http://127.0.0.1:8001/docs`.
+4. The backend API is now running locally on `http://127.0.0.1:8000`. You can inspect the interactive swagger documentation at `http://127.0.0.1:8000/docs`.
 
 ---
 
@@ -219,6 +219,6 @@ To configure the ElevenLabs Model Context Protocol (MCP) server in your IDE:
 ## 11. Troubleshooting
 
 - **Caller Hears Silence:** Check that your ElevenLabs agent's TTS Output and Input Audio formats are explicitly set to **μ-law 8000 Hz**. Default high-quality formats (e.g., MP3 or PCM) are incompatible with Twilio telephone lines.
-- **Connection Error on Dashboard:** Ensure your backend FastAPI application is running (`http://127.0.0.1:8001`) and that CORS is enabled (already handled in `main.py`).
+- **Connection Error on Dashboard:** Ensure your backend FastAPI application is running (`http://127.0.0.1:8000`) and that CORS is enabled (already handled in `main.py`).
 - **Twilio Authentication Failure:** Verify `TWILIO_ACCOUNT_SID` and `TWILIO_AUTH_TOKEN` in `.env`. Ensure your Twilio number is active.
 - **Invalid Number Format:** Ensure you include the country code and `+` prefix (e.g., `+1...` or `+91...`).
